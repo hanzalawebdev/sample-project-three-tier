@@ -1,52 +1,38 @@
 version: '3.8'
 
 services:
+  
   postgresdb:
     image: postgres:latest
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: signupapp
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${AUTH_DB}
     ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
+      - "${POSTGRES_PORT}:5432"
+  
   adminer:
     image: adminer:latest
-    environment:
-      ADMINER_DEFAULT_SERVER: postgresdb
     ports:
       - "8080:8080"
 
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/auth/Dockerfile
     environment:
-      DB_USERNAME: postgres
-      DB_PASSWORD: postgres
-      DB_HOST: postgresdb
-      AUTH_DB: signupapp
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      AUTH_DB: ${AUTH_DB}
     ports:
       - "3000:3000"
     depends_on:
       - postgresdb
-    networks:
-      - app-network
 
   web:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: web/Dockerfile
     ports:
       - "80:80"
-    networks:
-      - app-network
-
-volumes:
-  postgres_data:
-
-networks:
-  app-network:
-    driver: bridge
