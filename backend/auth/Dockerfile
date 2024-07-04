@@ -2,22 +2,22 @@
 FROM node:16
 
 # Set working directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Set npm registry to Yarn's registry
 RUN npm set registry https://registry.yarnpkg.com
 
 # Copy the package.json and package-lock.json
-COPY backend/auth/package*.json ./
+COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN yarn install
 
 # Copy the rest of the application code into the container
-COPY backend/auth/ .
+COPY . .
 
 # Expose the port the app runs on
 EXPOSE 3000
 
 # Command to run the application
-CMD ["npm", "start"]
+# CMD ["yarn", "start"]
